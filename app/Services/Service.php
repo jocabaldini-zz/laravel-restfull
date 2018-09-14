@@ -6,7 +6,7 @@ abstract class Service extends Controller
 {
 	protected $model;
 	
-	protected function index(array $params)
+	public function index(array $params) : array
 	{
 		$records = $this->model->all();
 
@@ -19,7 +19,7 @@ abstract class Service extends Controller
 		];
 	}
 
-	protected function create(array $params)
+	public function create(array $params) : array
 	{
 		$record = $this->model->create($params);
 
@@ -33,14 +33,14 @@ abstract class Service extends Controller
 		];
 	}
 
-	protected function read(array $params)
+	public function read(array $params) : array
 	{
 		$record = $this->model->findOrFail($params['id']);
 
 		return ['content' => $record];
 	}
 
-	protected function update(array $params)
+	public function update(array $params) : array
 	{
 		$record = $this->model->findOrFail($params['id']);
 		unset($params['id']);
@@ -52,7 +52,7 @@ abstract class Service extends Controller
 		return ['content' => $record];
 	}
 
-	protected function delete(array $params)
+	public function delete(array $params) : array
 	{
 		$record = $this->model->findOrFail($params['id']);
 		
