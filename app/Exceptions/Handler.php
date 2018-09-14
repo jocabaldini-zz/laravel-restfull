@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -37,6 +38,30 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+    protected $appExceptions = [
+        AppException::class,
+    ];
+
+    protected $unauthorizedExceptions = [
+        AuthenticationException::class,
+        AuthorizationException::class,
+        TokenMismatchException::class,
+    ];
+
+    protected $forbiddenExceptions = [
+        HttpResponseException::class,
+    ];
+
+    protected $notFoundExceptions = [
+        ModelNotFoundException::class,
+        HttpException::class,
+        NotFoundHttpException::class,
+    ];
+
+    protected $validationExceptions = [
+        ValidationException::class,
+    ];
+
     /**
      * Report or log an exception.
      *
@@ -46,17 +71,17 @@ class Handler extends ExceptionHandler
     public function report(Exception $exception)
     {
         if ($this->shouldReport($exception)) {
-            Log::emergency('============ EXCEÇÃO NÃO PREVISTA ===============');
-            Log::info('Dados da requisição: ');
-            Log::info(json_encode(request()->all()));
-            Log::info('URL: ' . request()->path());
-            Log::info('Método: ' . request()->method());
-            Log::debug(json_encode($exception));
-            Log::debug(get_class($exception));/*
-            Log::info('Status code: ' . $exception()->code());
-            Log::info('Mensagem: ' . $exception->getMessage());
-            Log::info('Stacktrace: ');
-            Log::info($exception->getTraceAsString());*/
+            Log::emergency(    
+                '======================== EXCEÇÃO NÃO PREVISTA ========================' . PHP_EOL .
+                'Dados da requisição: ' . PHP_EOL .
+                json_encode(request()->all()) . PHP_EOL .
+                'URL: ' . request()->path() . PHP_EOL .
+                'Método: ' . request()->method() . PHP_EOL .
+                'Mensagem: ' . $exception->getMessage() . PHP_EOL .
+                'Stracktrace:' . PHP_EOL .
+                $exception->getTraceAsString() . PHP_EOL .
+                '======================================================================'
+            );
         }
 
         parent::report($exception);
@@ -71,36 +96,60 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        $content = ['message' => __('exception.defaults.error')];
-        $responseCode = HttpStatusCodeConstants::INTERNAL_SERVER_ERROR;
-        
-        if ($this->shouldntReport($exception)) {
-            if ($exception instanceof AppException) {
-                $responseCode = $exception->getCode();
-                $message = $exception->getMessage();
-            } elseif (
-                $exception instanceof AuthenticationException ||
-                $exception instanceof AuthorizationException ||
-                $exception instanceof TokenMismatchException
-            ) {
-                $responseCode = HttpStatusCodeConstants::UNAUTHORIZED;
-                $message = __('exception.defaults.unauthorized');
-            } elseif ($exception instanceof HttpResponseException) {
-                $responseCode = HttpStatusCodeConstants::FORBIDDEN;
-                $message = __('exception.defaults.forbidden');
-            } elseif (
-                $exception instanceof ModelNotFoundException ||
-                $exception instanceof HttpException                
-            ) {
-                $responseCode = HttpStatusCodeConstants::NOT_FOUND;
-                $message = __('exception.defaults.not_found');;
-            } elseif ($exception instanceof ValidationException) {
-                $responseCode = HttpStatusCodeConstants::UNPROCESSABLE_ENTITY;
-                $message = $exception->validator->getMessageBag();
-            }
-            $content = ['message' => $message];
+        list($content, $code) = $this->handleException($exception);
+
+        return Response::make($content, $code);
+    }
+
+    private function handleException(Exception $exception) : array
+    {
+        if ($this->isAppException($exception)) {
+            $message = $exception->getMessage();
+            $code = $exception->getCode();
+        } elseif ($this->isUnauthorizedException($exception)) {
+            $message = __('exception.unauthorized');
+            $code = HttpStatusCodeConstants::UNAUTHORIZED;
+        } elseif ($this->isForbiddenException($exception)) {
+            $message = __('exception.forbidden');
+            $code = HttpStatusCodeConstants::FORBIDDEN;
+        } elseif ($this->isNotFoudException($exception)) {
+            $message = __('exception.not_found');
+            $code = HttpStatusCodeConstants::NOT_FOUND;
+        } elseif ($this->isValidationException($exception)) {
+            $message = $exception->validator->getMessageBag();
+            $code = HttpStatusCodeConstants::UNPROCESSABLE_ENTITY;
+        } else {
+            $message = __('exception.defaults.error');
+            $code = HttpStatusCodeConstants::INTERNAL_SERVER_ERROR;
         }
-        
-        return Response::make($content, $responseCode);
+
+        $content = ['message' => $message];
+
+        return [$content, $code];
+    }
+
+    private function isAppException(Exception $exception) : bool
+    {
+        return in_array(get_class($exception), $this->appExceptions);
+    }
+
+    private function isUnauthorizedException(Exception $exception) : bool
+    {
+        return in_array(get_class($exception), $this->unauthorizedExceptions);
+    }
+
+    private function isForbiddenException(Exception $exception) : bool
+    {
+        return in_array(get_class($exception), $this->forbiddenExceptions);
+    }
+
+    private function isNotFoudException(Exception $exception) : bool
+    {
+        return in_array(get_class($exception), $this->notFoundExceptions);
+    }
+
+    private function isValidationException(Exception $exception) : bool
+    {
+        return in_array(get_class($exception), $this->validationExceptions);
     }
 }

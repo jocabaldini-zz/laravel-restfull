@@ -13,8 +13,8 @@ return [
 
     'defaults' => [
         'error' => 'Ocorreu um erro no sistema!',
-        'unauthorized' => 'Conteúdo disponível apenas para usuários autenticados!',
-        'forbidden' => 'Contéudo não disponível!',
-        'not_found' => 'O conteúdo não existe!',
-    ]
+    ],
+    'unauthorized' => 'Conteúdo disponível apenas para usuários autenticados!',
+    'forbidden' => 'Contéudo não disponível!',
+    'not_found' => 'O conteúdo não existe!',
 ];
