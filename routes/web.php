@@ -1,5 +1,7 @@
 <?php
 
+use App\ModelTest;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +13,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::resource('resource', 'ModelTestController')->except([
+	'create', 'edit'
+]);
