@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
-use App\Contracts\ServicesContract;
+use App\Contracts\CrudServicesContract;
 use App\ModelTest;
+use App\Services\CrudService;
 
-class ModelTestService extends Service implements ServicesContract
+class ModelTestService extends CrudService implements CrudServicesContract
 {
 	public function __construct(ModelTest $model)
 	{
