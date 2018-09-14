@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 
 class ModelTestController extends RestfullController
 {
-    public function __construct(ModelTestInterface $impl)
+    public function __construct(ModelTestContract $impl)
     {
         $this->service = $impl;
     }
