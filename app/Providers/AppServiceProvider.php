@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Contracts\ServicesContract;
+use App\Http\Controllers\ModelTestController;
+use App\ModelTest;
+use App\Services\ModelTestService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->when(ModelTestController::class)
+                    ->needs(ServicesContract::class)
+                    ->give(function () {
+                        return new ModelTestService(new ModelTest);
+                    });
     }
 }
