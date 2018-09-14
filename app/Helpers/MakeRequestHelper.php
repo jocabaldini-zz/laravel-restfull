@@ -11,7 +11,16 @@ use Illuminate\Support\Facades\Response;
 
 abstract class MakeRequestHelper
 {
-	public static function makeRequest(array $request)
+    public static function sendRequest(string $service, string $method, array $params)
+    {
+        return self::makeRequest([
+            'service' => $service,
+            'method' => $method,
+            'params' => $params
+        ]);
+    }
+
+	private static function makeRequest(array $request)
 	{
         $timeStart = microtime(true);
         $content = null;
@@ -19,7 +28,6 @@ abstract class MakeRequestHelper
 
         DB::transaction(function () use ($request, &$content, &$responseCode, $timeStart) {
             $service = $request['service'];
-            $serviceName = get_class($service);
             $method  = $request['method'];
             $params  = $request['params'];
 
@@ -28,7 +36,8 @@ abstract class MakeRequestHelper
             $content = $response['response'];
             $responseCode = $response['status'] ?? HttpStatusCode::OK;
             
-            Log::debug("[Servico: {$serviceName}| Metodo: {$method}] Time: " . round((microtime(true) - $timeStart) * 1000) . " ms");
+            Log::debug("[Servico: {$serviceName}| Metodo: {$method}] Time: " 
+                . round((microtime(true) - $timeStart) * 1000) . " ms");
         });
 
         return Response::make($content, $responseCode);

@@ -2,9 +2,19 @@
 
 namespace App\Exceptions;
 
-use Exception;
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use App\Constants\HttpStatusCodeConstants;
+use App\Exceptions\AppException;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Session\TokenMismatchException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -14,7 +24,7 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        AppException::class,  
     ];
 
     /**
@@ -35,6 +45,20 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        if ($this->shouldReport($exception)) {
+            Log::emergency('============ EXCEÇÃO NÃO PREVISTA ===============');
+            Log::info('Dados da requisição: ');
+            Log::info(json_encode(request()->all()));
+            Log::info('URL: ' . request()->path());
+            Log::info('Método: ' . request()->method());
+            Log::debug(json_encode($exception));
+            Log::debug(get_class($exception));/*
+            Log::info('Status code: ' . $exception()->code());
+            Log::info('Mensagem: ' . $exception->getMessage());
+            Log::info('Stacktrace: ');
+            Log::info($exception->getTraceAsString());*/
+        }
+
         parent::report($exception);
     }
 
@@ -51,27 +75,30 @@ class Handler extends ExceptionHandler
         $responseCode = HttpStatusCodeConstants::INTERNAL_SERVER_ERROR;
         
         if ($this->shouldntReport($exception)) {
-            $content = ['message' => $exception->getMessage()];
-            
             if ($exception instanceof AppException) {
-                $responseCode = $e->getCode();
+                $responseCode = $exception->getCode();
+                $message = $exception->getMessage();
             } elseif (
                 $exception instanceof AuthenticationException ||
                 $exception instanceof AuthorizationException ||
                 $exception instanceof TokenMismatchException
             ) {
                 $responseCode = HttpStatusCodeConstants::UNAUTHORIZED;
+                $message = __('exception.defaults.unauthorized');
             } elseif ($exception instanceof HttpResponseException) {
                 $responseCode = HttpStatusCodeConstants::FORBIDDEN;
+                $message = __('exception.defaults.forbidden');
             } elseif (
                 $exception instanceof ModelNotFoundException ||
                 $exception instanceof HttpException                
             ) {
                 $responseCode = HttpStatusCodeConstants::NOT_FOUND;
+                $message = __('exception.defaults.not_found');;
             } elseif ($exception instanceof ValidationException) {
                 $responseCode = HttpStatusCodeConstants::UNPROCESSABLE_ENTITY;
-                $content['message'] = $exception->validator->getMessageBag();
+                $message = $exception->validator->getMessageBag();
             }
+            $content = ['message' => $message];
         }
         
         return Response::make($content, $responseCode);
