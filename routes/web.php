@@ -1,7 +1,5 @@
 <?php
 
-use App\ModelTest;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,7 +10,3 @@ use App\ModelTest;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::resource('resource', 'ModelTestController')->except([
-	'create', 'edit'
-]);
