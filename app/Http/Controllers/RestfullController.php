@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\MakeRequestHelper;
 use App\Services\Service;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 abstract class RestfullController extends Controller
 {

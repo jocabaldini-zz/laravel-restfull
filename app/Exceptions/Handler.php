@@ -98,7 +98,7 @@ class Handler extends ExceptionHandler
     {
         list($content, $code) = $this->handleException($exception);
 
-        return Response::make($content, $code);
+        return Response::json($content, $code);
     }
 
     private function handleException(Exception $exception) : array
