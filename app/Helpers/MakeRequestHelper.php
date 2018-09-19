@@ -3,8 +3,8 @@
 namespace App\Helpers;
 
 use App\Constants\HttpStatusCodeConstants;
+use App\Contracts\CrudServicesContract;
 use App\Exceptions\AppException;
-use App\Services\Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Response;
 
 abstract class MakeRequestHelper
 {
-    public static function sendRequest(Service $service, string $method, array $params)
+    public static function sendRequest(CrudServicesContract $service, string $method, array $params)
     {
         return self::makeRequest([
             'service' => $service,
