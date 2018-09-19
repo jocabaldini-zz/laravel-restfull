@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\CrudServicesContract;
 use App\Helpers\MakeRequestHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
