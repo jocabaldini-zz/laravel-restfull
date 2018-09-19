@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\MakeRequestHelper;
-use App\Services\Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -11,12 +10,12 @@ abstract class RestfullController extends Controller
 {
 	protected $service;
 
-	protected function getService() : Service
+	protected function getService() : CrudServicesContract
 	{
 		return $this->service;
 	}
 
-	protected function setService(Service $service) : void
+	protected function setService(CrudServicesContract $service) : void
 	{
 		$this->service = $service;
 	}

@@ -7,7 +7,7 @@ use App\Exceptions\AppException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-abstract class Service
+abstract class CrudService
 {
 	protected $model;
 	
