@@ -59,4 +59,3 @@ As classes criadas/editadas para o exemplo são:
  - __database/factories/ModelTestFactory.php__ _(Factory criado pelo Laravel para o seed da base para testes)_
  - __database/migrations/2018_09_14_174035_create_model_tests_table.php__ _(Migration criada pelo laravel para a criação da tabela do recurso na base)_
  - __database/seeds/ModelTestTableSeeder.php__ _(Seeder criado pelo Laravel para o seed da base para testes)_
- - __App/ModelTest.php__ _(Model criada pelo Laravel)_
