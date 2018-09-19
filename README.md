@@ -8,12 +8,12 @@ A aplicação conta com a estrutura base para controllers restfull e repositóri
 ## Estrutura
 A aplicação conta, além da estrutura padrão do Laravel 5, com a seguinte estrutura base _(toda a estrutura a seguir encontra-se dentro do namespace APP - pasta __app__ da estrutura do Laravel 5)_:
   - Constansts/HttpStatusCodeConstants.php
-  - Contracts/ServicesContract.php
+  - Contracts/CrudServicesContract.php
   - Exceptions/AppException.php
   - Exceptions/Handler.php (classe padrão do Laravel 5)
   - Helpers/MakeRequestHelper.php
   - Http/Controllers/RestfullController.php
-  - Services/Service.php
+  - Services/CrudService.php
 
 ### HttpStatusCodeConstants
 Classe ___abstrata___ para controlle do status HTTP das respostas da aplicação.
@@ -27,7 +27,7 @@ Conta com as constantes:
   - __UNPROCESSABLE_ENTITY__ = 422
   - __INTERNAL_SERVER_ERROR__ = 500
 
-### ServicesContract
+### CrudServicesContract
 Interface que deverá ser implementada pelos serviços que serão vinculados a ela no __RestfullController__.
 ### AppException
 Classe que extende a classe de exceção padrão do Laravel 5, usada apenas para identificar exceções lançadas pela própria aplicação.
@@ -42,7 +42,7 @@ Classe __abstrata__ criada para fornecer os métodos restfull dos controlles par
  - __show__
  - __update__
  - __destroy__
-### Service
+### CrudService
 Classe __abstrata__ criada para utilizar o Eloquent do Laravel 5 e já fornecer todos os métodos CRUD para os serviços que a extenderem. A classe fornece os métodos:
  - __index__  
  - __create__
@@ -54,10 +54,9 @@ Um exemplo do uso é apresentado na branch ___feature/testing___.
 As classes criadas/editadas para o exemplo são:
  - __app/ModelTest.php__ _(Model criado pelo Laravel)_
  - __app/Controllers/ModelTestController.php__ _(Controller criado pelo Laravel e extende o RestfullController)_
- - __app/Providers/AppServiceProvider.php__ _(Provider criado pelo Laravel, editado para fazer o bind da inteface ServicesContract com o serviço do recurso)_
- - __app/Services/ModelTestService.php__ _(Serviço criado para o recurso e extende o Service)_
+ - __app/Providers/AppServiceProvider.php__ _(Provider criado pelo Laravel, editado para fazer o bind da inteface CrudServicesContract com o serviço do recurso)_
+ - __app/Services/ModelTestService.php__ _(Serviço criado para o recurso e extende o CrudService)_
  - __database/factories/ModelTestFactory.php__ _(Factory criado pelo Laravel para o seed da base para testes)_
  - __database/migrations/2018_09_14_174035_create_model_tests_table.php__ _(Migration criada pelo laravel para a criação da tabela do recurso na base)_
  - __database/seeds/ModelTestTableSeeder.php__ _(Seeder criado pelo Laravel para o seed da base para testes)_
- - __App/ModelTest.php__ _(Model criada pelo Laravel)_
  - __App/ModelTest.php__ _(Model criada pelo Laravel)_

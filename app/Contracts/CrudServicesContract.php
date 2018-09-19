@@ -2,7 +2,7 @@
 
 namespace App\Contracts;
 
-interface ServicesContract
+interface CrudServicesContract
 {
 	public function index(array $params) : array;
 	public function create(array $params) : array;
